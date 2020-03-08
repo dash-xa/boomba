@@ -39,7 +39,7 @@ int randNumber;
 int inputNumber=0;
 int counter=0;
 bool audio = false;
-bool checked;
+bool checked = false;
 int inputRand1;
 int inputRand2;
 int inputRand3;
@@ -166,7 +166,6 @@ void loop()
     
     int userInputs[4];
     while(counter<4){
-      checked=false;
       sensorValueX = analogRead(X_pin);
       sensorValueY = analogRead(Y_pin);
       if(sensorValueX>900 && !checked){
@@ -197,6 +196,9 @@ void loop()
         //Serial.print("LEFT \n");
         counter++;
       }
+      if(sensorValueY<700 && sensorValueY>200 && sensorValueX<900 && sensorValueY>400){
+        checked = false;
+      }
       delay(250);
     }
     
@@ -206,12 +208,23 @@ void loop()
         correct=false;
       }
     }
-
-    if(digitalRead(50) == HIGH){
-      audio = true;
-      }
+    
+    while(correct && !audio){
+      digitalWrite(UP, HIGH);
+      digitalWrite(RIGHT, HIGH);
+      digitalWrite(LEFT, HIGH);
+      digitalWrite(DOWN, HIGH);
       
+      if(digitalRead(50) == HIGH){
+        audio = true;
+      }
+    }
+    
   if (correct && audio){
+    digitalWrite(UP, LOW);
+    digitalWrite(RIGHT, LOW);
+    digitalWrite(LEFT, LOW);
+    digitalWrite(DOWN, LOW);
     state = 0;
     timer = 0;
     lcd.clear();
